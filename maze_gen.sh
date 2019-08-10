@@ -79,24 +79,17 @@ function remove_walls {
 	local coords_B=(${cell_B//,/ })
 	local diff_x=$((${coords_A[1]} - ${coords_B[1]}))
 	local diff_y=$((${coords_A[0]} - ${coords_B[0]}))
-	echo " Diff X: "$diff_x"__"$(( -1 * diff_x ))
-	echo " Diff Y: "$diff_y"__"$(( -1 * diff_y ))
-	echo $(( -1 * diff_y )),$(( -1 * diff_x ))
 	local cell_val=${maze[$cell_A]}
 	local wall=${WALLS_MAP[$diff_y,$diff_x]}
-	echo "Wall A: "$wall
 	maze[$cell_A]="${cell_val//$wall}"
 	cell_val=${maze[$cell_B]}
 	wall=${WALLS_MAP[$(( -1 * diff_y )),$(( -1 * diff_x ))]}
-	echo "Wall B: "$wall
 	maze[$cell_B]="${cell_val//$wall}"
 }
 
 function get_unvisited_neighbours {
 	local cell_ind=$1
-	#echo $cell_ind
 	local coords=(${cell_ind//,/ })
-	#echo ${coords[*]}
 	local indx=$((${coords[0]}))
 	local indy=$((${coords[1]}))
 	unset neighbours_array
@@ -126,8 +119,6 @@ function get_unvisited_neighbours {
 		arr_len=$((arr_len + 1))
 	fi
 	
-	#printf "Index x: %s" "${indx}"
-	#printf "Index y: %s" "${indy}"
 }
 
 if [ $ROW_COUNT -lt 2 ]
@@ -146,7 +137,6 @@ CELL_COUNT=$(( ROW_COUNT * COLUMN_COUNT ))
 
 for ((i=0;i<ROW_COUNT;i++)) do
 	for ((j=0;j<COLUMN_COUNT;j++)) do
-		#maze[$i,$j]=$((1 + RANDOM % 100))
 		maze[$i,$j]="neswv"
 	done
 done
@@ -154,13 +144,6 @@ done
 current_cell="0,0"
 cell_stack[$current_cell]="none"
 visit_cell $current_cell
-#visited_counter=$((visited_counter + 1))
-#visit_cell "1,0"
-
-#remove_walls $current_cell "1,0"
-#remove_walls "1,1" "1,2"
-
-echo ${WALLS_MAP[*]}
 
 #if [ ]; then
 
@@ -170,17 +153,17 @@ do
 	get_unvisited_neighbours $current_cell
 	ncount=${#neighbours_array[@]}
 	next_cell=$current_cell
-	echo "Visited counter: "$visited_counter
 	
 	if [ $ncount -gt 0 ]
 	then
+
 		next_cell=${neighbours_array[$((RANDOM % $ncount))]}
-		echo "Next cell: "$next_cell
 		visit_cell $next_cell
 		remove_walls $current_cell $next_cell
 		cell_stack[$next_cell]=$current_cell
-		#visited_counter=$((visited_counter + 1))
+
 	else
+
 		next_cell=${cell_stack[$current_cell]}
 		unset cell_stack[$current_cell]
 	
@@ -194,19 +177,12 @@ done
 
 display_maze
 
-for ((i=0;i<ROW_COUNT;i++)) do
-	for ((j=0;j<COLUMN_COUNT;j++)) do
-		printf "%s " ${maze[$i,$j]}
-	done
-	echo ""
-done
+#for ((i=0;i<ROW_COUNT;i++)) do
+#	for ((j=0;j<COLUMN_COUNT;j++)) do
+#		printf "%s " ${maze[$i,$j]}
+#	done
+#	echo ""
+#done
 
-get_unvisited_neighbours 2,2
-echo ${neighbours_array[*]}
-
-get_unvisited_neighbours $current_cell
-echo ${neighbours_array[*]}
-
-echo $CELL_COUNT
 echo "Number of rows "$ROW_COUNT
 echo "Number of columns "$COLUMN_COUNT
